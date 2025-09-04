@@ -1,0 +1,1 @@
+em++ -I src src/*.cpp -o altair_ego.html -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" --shell-file shell.html
