@@ -8,6 +8,14 @@
 #include <emscripten.h>
 #include <emscripten/emscripten.h>
 
+EM_JS(void, flush_output_to_js, (const char* text), {
+    const outputElement = document.getElementById('output');
+    if (outputElement) {
+        outputElement.innerHTML += UTF8ToString(text);
+        outputElement.scrollTop = outputElement.scrollHeight;
+    }
+});
+
 EM_JS(void, await_input_from_js, (), {
   return Asyncify.handleAsync(async () => {
     window.isAwaitingInput = true;
@@ -22,6 +30,8 @@ AltairBasicInterpreter interpreter;
 std::stringstream output_buffer;
 // To hold the result to be passed to JS
 static std::string result_string;
+
+std::stringstream output_buffer;
 
 // New buffer for input
 static char input_buffer[256];
