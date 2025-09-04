@@ -109,22 +109,20 @@ const awariGame = `
     </script>
 
     <script type='text/javascript'>
-      var isAwaitingInput = false;
-      var wakeUpFromInput;
+      window.isAwaitingInput = false;
+      var resolveInputPromise;
 
-      function awaitInput(wakeUp) {
-          isAwaitingInput = true;
-          wakeUpFromInput = wakeUp;
+      function createInputPromise() {
+        window.awaitInputPromise = new Promise(resolve => {
+            resolveInputPromise = resolve;
+        });
       }
+
+      createInputPromise();
 
       var Module = {
         preRun: [],
         postRun: [],
-        Asyncify: {
-            handleSleep: function(wakeUp) {
-                awaitInput(wakeUp);
-            }
-        },
         print: (function() {
           var element = document.getElementById('output');
           if (element) element.innerHTML = ''; // clear browser cache
@@ -169,10 +167,10 @@ const awariGame = `
                     outputElement.innerHTML += `> ${command}\n`;
                     outputElement.scrollTop = outputElement.scrollHeight;
 
-                    if (isAwaitingInput) {
-                        isAwaitingInput = false;
+                    if (window.isAwaitingInput) {
                         Module.stringToUTF8(command, input_buffer_ptr, 256);
-                        wakeUpFromInput();
+                        resolveInputPromise();
+                        createInputPromise();
                     } else {
                         const result = processLine(command);
                         if (result) {

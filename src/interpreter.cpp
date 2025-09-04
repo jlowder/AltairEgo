@@ -8,7 +8,7 @@
 
 #ifdef __EMSCRIPTEN__
 extern "C" {
-    void request_input();
+    void await_input_from_js();
     const char* get_input_buffer();
 }
 #endif
@@ -292,7 +292,7 @@ void AltairBasicInterpreter::executeInput(std::shared_ptr<ASTNode> stmt) {
 
         while(allValues.size() < varList->children.size()) {
 #ifdef __EMSCRIPTEN__
-            request_input();
+            await_input_from_js();
             currentInputLine = get_input_buffer();
 #else
             if (!std::getline(std::cin, currentInputLine)) {

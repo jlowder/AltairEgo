@@ -8,6 +8,14 @@
 #include <emscripten.h>
 #include <emscripten/emscripten.h>
 
+EM_JS(void, await_input_from_js, (), {
+  return Asyncify.handleAsync(async () => {
+    window.isAwaitingInput = true;
+    await window.awaitInputPromise;
+    window.isAwaitingInput = false;
+  });
+});
+
 // Global interpreter instance
 AltairBasicInterpreter interpreter;
 // Stringstream to capture output
@@ -19,11 +27,6 @@ static std::string result_string;
 static char input_buffer[256];
 
 extern "C" {
-
-EMSCRIPTEN_KEEPALIVE
-void request_input() {
-    emscripten_sleep_with_yield();
-}
 
 EMSCRIPTEN_KEEPALIVE
 const char* get_input_buffer() {
