@@ -1,0 +1,39 @@
+Altair Ego: Emulating Altair BASIC 32K Rev. 3.2
+OK
+OK
+=== LOOP TESTS ===
+I= 1
+I= 2
+I= 3
+I= 4
+I= 5
+Even:  2
+Even:  4
+Even:  6
+Even:  8
+Even:  10
+Countdown:  10
+Countdown:  9
+Countdown:  8
+Countdown:  7
+Countdown:  6
+Countdown:  5
+Countdown:  4
+Countdown:  3
+Countdown:  2
+Countdown:  1
+I= 1  J= 1
+I= 1  J= 2
+I= 2  J= 1
+I= 2  J= 2
+I= 3  J= 1
+I= 3  J= 2
+While-like:  1
+While-like:  2
+While-like:  3
+While-like:  4
+While-like:  5
+Case 1
+Case 2
+Case 3
+OK

@@ -1,0 +1,12 @@
+Altair Ego: Emulating Altair BASIC 32K Rev. 3.2
+OK
+OK
+Testing MID$() function:
+A$ = HELLO
+B$ = WORLD
+MID$(A$,2,3) = ELL
+MID$(B$,1,2) = WO
+First char of A$ is H - CORRECT
+Last char of B$ is D - CORRECT
+2nd chars don't match
+OK

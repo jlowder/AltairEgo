@@ -1,0 +1,73 @@
+Altair Ego: Emulating Altair BASIC 32K Rev. 3.2
+OK
+OK
+Debugging enabled.
+[DEBUG] Processing line: 800 LET L=20
+[DEBUG] Processing line: 810 LET R=2
+[DEBUG] Processing line: 830 IF L>13 THEN L=L-14:R=1:GOTO 830
+[DEBUG] Processing line: 840 PRINT L
+[DEBUG] Processing line: 850 PRINT R
+[DEBUG] Processing line: 860 END
+[DEBUG] Processing line: RUN
+[DEBUG] Executing statement: 20
+[DEBUG] Executing program...
+[DEBUG] Program loop: currentLine=800, currentStatementIndex=0, callStack size: 0, forLoopStack size: 0
+[DEBUG] Executing line 800 starting from stmt 0, callStack size: 0, forLoopStack size: 0
+[DEBUG] About to execute stmt 0 on line 800
+[DEBUG] Executing statement: 2
+[DEBUG] Evaluating expression of type: 6
+[DEBUG]   NODE_NUMBER: 20
+[DEBUG]   LET L = 20
+[DEBUG] Program loop: currentLine=810, currentStatementIndex=0, callStack size: 0, forLoopStack size: 0
+[DEBUG] Executing line 810 starting from stmt 0, callStack size: 0, forLoopStack size: 0
+[DEBUG] About to execute stmt 0 on line 810
+[DEBUG] Executing statement: 2
+[DEBUG] Evaluating expression of type: 6
+[DEBUG]   NODE_NUMBER: 2
+[DEBUG]   LET R = 2
+[DEBUG] Program loop: currentLine=830, currentStatementIndex=0, callStack size: 0, forLoopStack size: 0
+[DEBUG] Executing line 830 starting from stmt 0, callStack size: 0, forLoopStack size: 0
+[DEBUG] About to execute stmt 0 on line 830
+[DEBUG] Executing statement: 3
+[DEBUG] Evaluating expression of type: 4
+[DEBUG] Evaluating expression of type: 7
+[DEBUG]   NODE_VARIABLE: L = 20
+[DEBUG] Evaluating expression of type: 6
+[DEBUG]   NODE_NUMBER: 13
+[DEBUG]   NODE_BINARY_OP: 20 9 13
+[DEBUG] Executing statement: 2
+[DEBUG] Evaluating expression of type: 4
+[DEBUG] Evaluating expression of type: 7
+[DEBUG]   NODE_VARIABLE: L = 20
+[DEBUG] Evaluating expression of type: 6
+[DEBUG]   NODE_NUMBER: 14
+[DEBUG]   NODE_BINARY_OP: 20 1 14
+[DEBUG]   LET L = 6
+[DEBUG] Executing statement: 2
+[DEBUG] Evaluating expression of type: 6
+[DEBUG]   NODE_NUMBER: 1
+[DEBUG]   LET R = 1
+[DEBUG] Executing statement: 9
+[DEBUG] Evaluating expression of type: 6
+[DEBUG]   NODE_NUMBER: 830
+[DEBUG] GOTO 830
+[DEBUG] Program loop: currentLine=840, currentStatementIndex=0, callStack size: 0, forLoopStack size: 0
+[DEBUG] Executing line 840 starting from stmt 0, callStack size: 0, forLoopStack size: 0
+[DEBUG] About to execute stmt 0 on line 840
+[DEBUG] Executing statement: 0
+[DEBUG] Evaluating expression of type: 7
+[DEBUG]   NODE_VARIABLE: L = 6
+ 6
+[DEBUG] Program loop: currentLine=850, currentStatementIndex=0, callStack size: 0, forLoopStack size: 0
+[DEBUG] Executing line 850 starting from stmt 0, callStack size: 0, forLoopStack size: 0
+[DEBUG] About to execute stmt 0 on line 850
+[DEBUG] Executing statement: 0
+[DEBUG] Evaluating expression of type: 7
+[DEBUG]   NODE_VARIABLE: R = 1
+ 1
+[DEBUG] Program loop: currentLine=860, currentStatementIndex=0, callStack size: 0, forLoopStack size: 0
+[DEBUG] Executing line 860 starting from stmt 0, callStack size: 0, forLoopStack size: 0
+[DEBUG] About to execute stmt 0 on line 860
+[DEBUG] Executing statement: 16
+[DEBUG] Program execution finished.
+OK

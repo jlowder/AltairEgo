@@ -1,0 +1,39 @@
+10 REM ARRAY AND STRING TESTS
+20 PRINT "=== ARRAY TESTS ==="
+30 DIM A(10), B(5,3), C$(5)
+40 REM Test 1D array
+50 FOR I=0 TO 10
+60 A(I) = I * I
+70 NEXT I
+80 FOR I=0 TO 10
+90 PRINT "A("; I; ")="; A(I)
+100 NEXT I
+110 REM Test 2D array
+120 FOR I=0 TO 5
+130 FOR J=0 TO 3
+140 B(I,J) = I + J
+150 NEXT J
+160 NEXT I
+170 FOR I=0 TO 5
+180 FOR J=0 TO 3
+190 PRINT "B("; I; ","; J; ")="; B(I,J)
+200 NEXT J
+210 NEXT I
+220 REM Test string array
+230 C$(0) = "ZERO"
+240 C$(1) = "ONE"
+250 C$(2) = "TWO"
+260 FOR I=0 TO 2
+270 PRINT "C$("; I; ")="; C$(I)
+280 NEXT I
+290 PRINT "=== STRING MANIPULATION ==="
+300 A$ = "HELLO WORLD"
+310 PRINT "Original: "; A$
+320 PRINT "Length: "; LEN(A$)
+330 PRINT "Left 5: "; LEFT$(A$, 5)
+340 PRINT "Right 5: "; RIGHT$(A$, 5)
+350 PRINT "Mid 3,5: "; MID$(A$, 3, 5)
+360 REM Test string comparison
+370 IF "ABC" < "DEF" THEN PRINT "ABC < DEF"
+380 IF "HELLO" = "HELLO" THEN PRINT "Strings equal"
+390 END

@@ -1,0 +1,22 @@
+Altair Ego: Emulating Altair BASIC 32K Rev. 3.2
+OK
+OK
+=== I/O TESTS ===
+Basic print
+Number:  42
+String: HELLO
+Mixed:  42  and HELLO
+Semicolontest
+Comma         test          here
+TAB test:
+    5
+         10
+              15
+A        B         C
+
+After blank line
+=== DATA/READ TESTS ===
+Read:  123  TEST  456.789
+Read:  999  LAST
+After RESTORE:  123
+OK

@@ -1,0 +1,14 @@
+Altair Ego: Emulating Altair BASIC 32K Rev. 3.2
+OK
+OK
+=== MATH FUNCTION TESTS ===
+ABS(-10) =  10
+ABS(10) =  10
+INT(3.7) =  3
+INT(-3.7) = -4
+SQR(25) =  5
+SQR(2) =  1.414214
+SIN(0) =  0
+COS(0) =  1
+TAN(0) = ILLEGAL VARIABLE NAME
+OK

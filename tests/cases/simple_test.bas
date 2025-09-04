@@ -1,0 +1,5 @@
+10 DATA BLACK,WHITE,RED
+20 READ A$,B$,C$
+30 PRINT A$;" ";B$;" ";C$
+40 END
+

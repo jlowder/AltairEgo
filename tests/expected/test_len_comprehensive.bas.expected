@@ -1,0 +1,8 @@
+Altair Ego: Emulating Altair BASIC 32K Rev. 3.2
+OK
+OK
+LEN of 'HELLO':              5
+LEN of empty string:         0
+LEN of literal:              5
+LEN of single char:          1
+OK

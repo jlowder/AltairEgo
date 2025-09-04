@@ -1,0 +1,3 @@
+10 X = 123
+20 PRINT LEN(X)
+30 END

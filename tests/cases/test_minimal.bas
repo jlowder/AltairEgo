@@ -1,0 +1,14 @@
+10 REM MINIMAL TEST FOR DEBUGGING
+20 PRINT "Testing basic operations..."
+30 A=5: B=3
+40 PRINT "A="; A; " B="; B
+50 PRINT "A+B="; A+B
+60 DIM X(5)
+70 X(0)=10: X(1)=20
+80 PRINT "X(0)="; X(0); " X(1)="; X(1)
+90 FOR I=1 TO 3: PRINT I;: NEXT I: PRINT
+100 IF A>B THEN PRINT "A is greater"
+110 GOSUB 200
+120 END
+200 PRINT "In subroutine"
+210 RETURN

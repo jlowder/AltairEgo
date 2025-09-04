@@ -1,0 +1,28 @@
+10 REM MATHEMATICAL FUNCTION TESTS
+20 PRINT "=== MATH FUNCTION TESTS ==="
+30 PRINT "ABS(-10) = "; ABS(-10)
+40 PRINT "ABS(10) = "; ABS(10)
+50 PRINT "INT(3.7) = "; INT(3.7)
+60 PRINT "INT(-3.7) = "; INT(-3.7)
+70 PRINT "SQR(25) = "; SQR(25)
+80 PRINT "SQR(2) = "; SQR(2)
+90 PRINT "SIN(0) = "; SIN(0)
+100 PRINT "COS(0) = "; COS(0)
+110 PRINT "TAN(0) = "; TAN(0)
+120 PRINT "ATN(1) = "; ATN(1)
+130 PRINT "EXP(1) = "; EXP(1)
+140 PRINT "LOG(2.718) = "; LOG(2.718)
+150 REM Test random numbers
+160 PRINT "Random numbers:"
+170 FOR I=1 TO 5
+180 PRINT "RND(1) = "; RND(1)
+190 NEXT I
+200 REM Test SGN function
+210 PRINT "SGN(-5) = "; SGN(-5)
+220 PRINT "SGN(0) = "; SGN(0)
+230 PRINT "SGN(5) = "; SGN(5)
+240 REM Test complex expressions
+250 X = 3.14159
+260 Y = SIN(X/2) + COS(X/4)
+270 PRINT "Complex: "; Y
+280 END

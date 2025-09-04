@@ -1,0 +1,11 @@
+Altair Ego: Emulating Altair BASIC 32K Rev. 3.2
+OK
+OK
+Testing basic operations...
+A= 5  B= 3
+A+B= 8
+X(0)= 10  X(1)= 20
+ 1  2  3
+A is greater
+In subroutine
+OK

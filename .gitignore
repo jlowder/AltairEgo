@@ -1,0 +1,24 @@
+# Object files
+*.o
+
+# Executable
+altair_basic
+src/altair_basic
+
+# Autotools generated files
+aclocal.m4
+autom4te.cache/
+compile
+config.h.in
+configure
+depcomp
+install-sh
+missing
+Makefile.in
+stamp-h1
+src/Makefile.in
+config.status
+config.log
+config.h
+Makefile
+src/Makefile

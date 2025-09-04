@@ -1,0 +1,15 @@
+10 REM Test string arrays
+20 DIM A$(5)
+30 DIM Q(5)
+40 LET L$="HELLO"
+50 FOR I=1 TO 5
+60 LET Q(I)=I
+70 A$(I)=MID$(L$,Q(I),1)
+80 PRINT "A$(";I;")=";A$(I)
+90 NEXT I
+100 REM Test reading back
+110 FOR I=1 TO 5
+120 PRINT A$(I);
+130 NEXT I
+140 PRINT
+150 END

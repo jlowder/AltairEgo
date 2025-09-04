@@ -1,0 +1,3 @@
+10 A$ = "HELLO"
+20 PRINT LEN(A$)
+30 END
