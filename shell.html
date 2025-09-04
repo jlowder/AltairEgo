@@ -53,14 +53,6 @@
           if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
           console.error(text);
         },
-        canvas: (function() {
-          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-          // application robust, you may want to override this behavior before shipping!
-          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-          var canvas = document.getElementById('canvas');
-          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-          return canvas;
-        })(),
         setStatus: function(text) {
           // Do nothing
         },
@@ -68,44 +60,33 @@
         monitorRunDependencies: function(left) {
           this.totalDependencies = Math.max(this.totalDependencies, left);
           Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        },
+        onRuntimeInitialized: function() {
+            const outputElement = document.getElementById('output');
+            const inputElement = document.getElementById('input');
+
+            outputElement.innerHTML = '';
+
+            const processLine = Module.cwrap('process_line', 'string', ['string']);
+            const initialOutput = processLine('');
+            outputElement.innerHTML += initialOutput;
+
+            inputElement.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    const command = inputElement.value;
+                    inputElement.value = '';
+                    outputElement.innerHTML += `> ${command}\n`;
+                    const result = processLine(command);
+                    if (result) {
+                        outputElement.innerHTML += result;
+                    }
+                    outputElement.scrollTop = outputElement.scrollHeight;
+                }
+            });
         }
       };
       Module.setStatus('Downloading...');
-      window.onerror = function(event) {
-        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
-        Module.setStatus('Exception thrown, see JavaScript console');
-        spinnerElement.style.display = 'none';
-        Module.setStatus = function(text) {
-          if (text) Module.printErr('[post-exception status] ' + text);
-        };
-      };
     </script>
     {{{ SCRIPT }}}
-    <script>
-        const inputElement = document.getElementById('input');
-        const outputElement = document.getElementById('output');
-
-        let processLine;
-
-        Module.onRuntimeInitialized = () => {
-            outputElement.innerHTML = '';
-            processLine = Module.cwrap('process_line', 'string', ['string']);
-            const initialOutput = processLine('');
-            outputElement.innerHTML += initialOutput;
-        };
-
-        inputElement.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                const command = inputElement.value;
-                inputElement.value = '';
-                outputElement.innerHTML += `> ${command}\n`;
-                const result = processLine(command);
-                if (result) {
-                    outputElement.innerHTML += result;
-                }
-                outputElement.scrollTop = outputElement.scrollHeight;
-            }
-        });
-    </script>
   </body>
 </html>
