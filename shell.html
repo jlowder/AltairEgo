@@ -147,20 +147,20 @@ const awariGame = `
           this.totalDependencies = Math.max(this.totalDependencies, left);
           Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         },
-        onRuntimeInitialized: function() {
+        onRuntimeInitialized: async function() {
             const outputElement = document.getElementById('output');
             const inputElement = document.getElementById('input');
 
             outputElement.innerHTML = '';
 
-            const processLine = Module.cwrap('process_line', 'string', ['string']);
+            const processLine = Module.cwrap('process_line', 'string', ['string'], { async: true });
             const get_input_buffer = Module.cwrap('get_input_buffer', 'number', []);
             const input_buffer_ptr = get_input_buffer();
 
-            const initialOutput = processLine('');
+            const initialOutput = await processLine('');
             outputElement.innerHTML += initialOutput;
 
-            inputElement.addEventListener('keydown', (event) => {
+            inputElement.addEventListener('keydown', async (event) => {
                 if (event.key === 'Enter') {
                     const command = inputElement.value;
                     inputElement.value = '';
@@ -172,7 +172,7 @@ const awariGame = `
                         resolveInputPromise();
                         createInputPromise();
                     } else {
-                        const result = processLine(command);
+                        const result = await processLine(command);
                         if (result) {
                             outputElement.innerHTML += result;
                         }
@@ -182,16 +182,16 @@ const awariGame = `
 
             // Load and run the Awari game
             const awariLines = awariGame.trim().split('\n');
-            awariLines.forEach(line => {
+            for (const line of awariLines) {
                 if (line.trim()) {
                     outputElement.innerHTML += `> ${line}\n`;
-                    const result = processLine(line);
+                    const result = await processLine(line);
                     if (result) {
                         outputElement.innerHTML += result;
                     }
                 }
-            });
-            const runResult = processLine('RUN');
+            }
+            const runResult = await processLine('RUN');
             if (runResult) {
                 outputElement.innerHTML += runResult;
             }
