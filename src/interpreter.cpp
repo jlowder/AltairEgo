@@ -6,6 +6,16 @@
 #include <cmath>
 #include <set>
 
+#ifdef __EMSCRIPTEN__
+#include <sstream> // Required for std::stringstream
+extern std::stringstream output_buffer;
+extern "C" {
+    void flush_output_to_js(const char* text);
+    void await_input_from_js();
+    const char* get_input_buffer();
+}
+#endif
+
 AltairBasicInterpreter::AltairBasicInterpreter() 
     : dataPointer(0), currentLine(-1), currentStatementIndex(0), running(false), stopExecution(false), returningFromSubroutine(false), debug(false), m_currentColumn(0) {}
 
@@ -284,9 +294,20 @@ void AltairBasicInterpreter::executeInput(std::shared_ptr<ASTNode> stmt) {
         std::string currentInputLine;
 
         while(allValues.size() < varList->children.size()) {
+#ifdef __EMSCRIPTEN__
+            std::string current_output = output_buffer.str();
+            if (!current_output.empty()) {
+                flush_output_to_js(current_output.c_str());
+                output_buffer.str("");
+                output_buffer.clear();
+            }
+            await_input_from_js();
+            currentInputLine = get_input_buffer();
+#else
             if (!std::getline(std::cin, currentInputLine)) {
                 return; // End of input stream
             }
+#endif
 
             std::stringstream ss(currentInputLine);
             std::string value;
