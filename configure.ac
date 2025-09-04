@@ -1,4 +1,4 @@
-AC_INIT([altair-basic], [1.0], [bug-report-address])
+AC_INIT([altair-ego], [0.9.0])
 AC_CONFIG_SRCDIR([src/main.cpp])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
