@@ -2,8 +2,8 @@
 *.o
 
 # Executable
-altair_basic
-src/altair_basic
+altair_ego
+src/altair_ego
 
 # Autotools generated files
 aclocal.m4
