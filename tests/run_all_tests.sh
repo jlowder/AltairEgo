@@ -9,10 +9,10 @@ NC='\033[0m' # No Color
 
 # The interpreter should be built by 'make' before running this script.
 # The executable is expected to be in the src directory.
-ALTAIR_BASIC_EXEC="src/altair_basic"
+ALTAIR_EGO_EXEC="src/altair_ego"
 
-if [ ! -f "$ALTAIR_BASIC_EXEC" ]; then
-    echo -e "${RED}❌ EXECUTABLE NOT FOUND at $ALTAIR_BASIC_EXEC${NC}"
+if [ ! -f "$ALTAIR_EGO_EXEC" ]; then
+    echo -e "${RED}❌ EXECUTABLE NOT FOUND at $ALTAIR_EGO_EXEC${NC}"
     echo "Please run 'make' first."
     exit 1
 fi
@@ -39,7 +39,7 @@ for test_file in "$CASES_DIR"/*.bas; do
         echo "NEW"
         cat "$test_file"
         echo "RUN"
-    ) | $ALTAIR_BASIC_EXEC > "$actual_output_file" 2>&1
+    ) | $ALTAIR_EGO_EXEC > "$actual_output_file" 2>&1
 
     # Compare the output, ignoring trailing whitespace
     if diff -ub --strip-trailing-cr "$expected_file" "$actual_output_file" > /dev/null; then
