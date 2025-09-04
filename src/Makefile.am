@@ -1,5 +1,5 @@
-bin_PROGRAMS = altair_basic
-altair_basic_SOURCES = \
+bin_PROGRAMS = altair_ego
+altair_ego_SOURCES = \
   main.cpp \
   lexer.cpp \
   parser.cpp \
