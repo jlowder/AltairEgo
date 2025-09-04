@@ -52,7 +52,55 @@ The `working-examples/` directory contains several classic BASIC games that demo
 ### Running an Example
 
 ```bash
-altair_ego working-examples/mastermind.bas
+altair_ego working-examples/3dplot.bas
+                               3D PLOT
+              CREATIVE COMPUTING  MORRISTOWN, NEW JERSEY
+
+
+
+
+                        *
+                    *   *  *
+                 *  *   *  *   *
+             *   *  *   *  *   *  *
+             *   *  *   *  *   *  *
+             *   *  *   *  *   *  *
+          *  *   *  *   *  *   *  *   *
+          *  *   *   *  *   *  *  *   *
+          *  *   *   *   *  *  *  *   *
+      *   *  *   *    *  *   * *  *   *  *
+      *   *  *    *   *    * *  * *   *  *
+      *   *   *   *     *   *  **  *  *  *
+      *   *   *    *      *    * * *  *  *
+      *   *   *     *       *    * *  *  *
+      *   *   *      *        *      **  *
+      *   *    *       *         *       *
+      *   *    *        *           *       *
+      *   *     *         *            *        *
+      *   *     *          *             *         *
+      *   *     *          *               *         *
+   *  *   *     *           *              *          *
+      *   *     *          *               *         *
+      *   *     *          *             *         *
+      *   *     *         *            *        *
+      *   *    *        *           *       *
+      *   *    *       *         *       *
+      *   *   *      *        *      **  *
+      *   *   *     *       *    * *  *  *
+      *   *   *    *      *    * * *  *  *
+      *   *   *   *     *   *  **  *  *  *
+      *   *  *    *   *    * *  * *   *  *
+      *   *  *   *    *  *   * *  *   *  *
+          *  *   *   *   *  *  *  *   *
+          *  *   *   *  *   *  *  *   *
+          *  *   *  *   *  *   *  *   *
+             *   *  *   *  *   *  *
+             *   *  *   *  *   *  *
+             *   *  *   *  *   *  *
+                 *  *   *  *   *
+                    *   *  *
+                        *
+
 ```
 
 ## BASIC Language Support
