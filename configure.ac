@@ -10,7 +10,7 @@ case "$host_alias" in
   wasm32-*-emscripten* | asmjs-*-emscripten*)
     is_emscripten=yes
     # This flag helps the configure-time tests pass by creating a self-contained JS file.
-    CXXFLAGS="$CXXFLAGS -s SINGLE_FILE=1"
+    LDFLAGS="$LDFLAGS -s SINGLE_FILE=1"
     ;;
 esac
 AM_CONDITIONAL([IS_EMSCRIPTEN], [test "$is_emscripten" = "yes"])
