@@ -31,8 +31,6 @@ std::stringstream output_buffer;
 // To hold the result to be passed to JS
 static std::string result_string;
 
-std::stringstream output_buffer;
-
 // New buffer for input
 static char input_buffer[256];
 
