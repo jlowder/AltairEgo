@@ -6,6 +6,7 @@
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#include <emscripten/emscripten.h>
 
 // Global interpreter instance
 AltairBasicInterpreter interpreter;
@@ -14,7 +15,20 @@ std::stringstream output_buffer;
 // To hold the result to be passed to JS
 static std::string result_string;
 
+// New buffer for input
+static char input_buffer[256];
+
 extern "C" {
+
+EMSCRIPTEN_KEEPALIVE
+void request_input() {
+    emscripten_sleep_with_yield();
+}
+
+EMSCRIPTEN_KEEPALIVE
+const char* get_input_buffer() {
+    return input_buffer;
+}
 
 EMSCRIPTEN_KEEPALIVE
 const char* process_line(const char* input_line_cstr) {

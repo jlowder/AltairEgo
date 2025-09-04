@@ -1,0 +1,8 @@
+# This is a dummy emscripten config file.
+# I am creating it to see if I can influence the build process.
+import os
+EMSCRIPTEN_ROOT = os.path.abspath('.')
+LLVM_ROOT = os.path.abspath('SDK')
+BINARYEN_ROOT = os.path.abspath('SDK')
+NODE_JS = 'node'
+PYTHON = 'python3'

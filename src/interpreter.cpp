@@ -6,6 +6,13 @@
 #include <cmath>
 #include <set>
 
+#ifdef __EMSCRIPTEN__
+extern "C" {
+    void request_input();
+    const char* get_input_buffer();
+}
+#endif
+
 AltairBasicInterpreter::AltairBasicInterpreter() 
     : dataPointer(0), currentLine(-1), currentStatementIndex(0), running(false), stopExecution(false), returningFromSubroutine(false), debug(false), m_currentColumn(0) {}
 
@@ -284,9 +291,14 @@ void AltairBasicInterpreter::executeInput(std::shared_ptr<ASTNode> stmt) {
         std::string currentInputLine;
 
         while(allValues.size() < varList->children.size()) {
+#ifdef __EMSCRIPTEN__
+            request_input();
+            currentInputLine = get_input_buffer();
+#else
             if (!std::getline(std::cin, currentInputLine)) {
                 return; // End of input stream
             }
+#endif
 
             std::stringstream ss(currentInputLine);
             std::string value;
