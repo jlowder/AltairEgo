@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>AltairEgo BASIC</title>
+    <style>
+      body {
+        font-family: monospace;
+        background-color: #f0f0f0;
+        color: #333;
+      }
+      #output {
+        width: 100%;
+        height: 400px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow-y: scroll;
+        background-color: #fff;
+      }
+      #input {
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 10px;
+        box-sizing: border-box;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AltairEgo BASIC</h1>
+    <pre id="output">Loading...</pre>
+    <input type="text" id="input" placeholder="Enter a BASIC command">
+
+    <script type='text/javascript'>
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+          var element = document.getElementById('output');
+          if (element) element.innerHTML = ''; // clear browser cache
+          return function(text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            console.log(text);
+            if (element) {
+              element.innerHTML += text + "\n";
+              element.scrollTop = element.scrollHeight; // focus on bottom
+            }
+          };
+        })(),
+        printErr: function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.error(text);
+        },
+        canvas: (function() {
+          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+          // application robust, you may want to override this behavior before shipping!
+          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+          var canvas = document.getElementById('canvas');
+          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+          return canvas;
+        })(),
+        setStatus: function(text) {
+          // Do nothing
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        }
+      };
+      Module.setStatus('Downloading...');
+      window.onerror = function(event) {
+        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        Module.setStatus('Exception thrown, see JavaScript console');
+        spinnerElement.style.display = 'none';
+        Module.setStatus = function(text) {
+          if (text) Module.printErr('[post-exception status] ' + text);
+        };
+      };
+    </script>
+    {{{ SCRIPT }}}
+    <script>
+        const inputElement = document.getElementById('input');
+        const outputElement = document.getElementById('output');
+
+        let processLine;
+
+        Module.onRuntimeInitialized = () => {
+            outputElement.innerHTML = '';
+            processLine = Module.cwrap('process_line', 'string', ['string']);
+            const initialOutput = processLine('');
+            outputElement.innerHTML += initialOutput;
+        };
+
+        inputElement.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                const command = inputElement.value;
+                inputElement.value = '';
+                outputElement.innerHTML += `> ${command}\n`;
+                const result = processLine(command);
+                if (result) {
+                    outputElement.innerHTML += result;
+                }
+                outputElement.scrollTop = outputElement.scrollHeight;
+            }
+        });
+    </script>
+  </body>
+</html>
