@@ -1,0 +1,53 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $0 [-h] [-o output_file] input_file"
+    echo "  -h              Show this help message"
+    echo "  -o output_file  Specify output filename (default: input_file with .bas replaced by .html)"
+    echo "  input_file      Input .bas file to process"
+}
+
+output_file=""
+
+while getopts "ho:" opt; do
+    case $opt in
+        h)
+            usage
+            exit 0
+            ;;
+        o)
+            output_file="$OPTARG"
+            ;;
+        \?)
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+if [ $# -ne 1 ]; then
+    usage
+    exit 1
+fi
+
+input_file="$1"
+
+if [ ! -f "$input_file" ]; then
+    echo "Error: Input file '$input_file' does not exist"
+    usage
+    exit 1
+fi
+
+if [ -z "$output_file" ]; then
+    output_file=$(basename "$input_file" .bas).html
+fi
+
+trap "rm -f shell.html" EXIT
+
+# first, build the shell
+cat shell-top.html "$input_file" shell-bottom.html > shell.html
+
+# second, build with emscripten
+em++ -I src ../../src/*.cpp -o "$output_file" -s "EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'stringToUTF8']" -s "ASYNCIFY_IMPORTS=['await_input_from_js']" --shell-file shell.html -s SINGLE_FILE=1 -s ASYNCIFY -fexceptions

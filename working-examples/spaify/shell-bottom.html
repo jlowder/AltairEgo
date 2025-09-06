@@ -1,0 +1,98 @@
+`;
+    </script>
+
+    <script type='text/javascript'>
+      window.isAwaitingInput = false;
+      var resolveInputPromise;
+
+      function createInputPromise() {
+        window.awaitInputPromise = new Promise(resolve => {
+            resolveInputPromise = resolve;
+        });
+      }
+
+      createInputPromise();
+
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+          var element = document.getElementById('output');
+          if (element) element.innerHTML = ''; // clear browser cache
+          return function(text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            console.log(text);
+            if (element) {
+              element.innerHTML += text + "\n";
+              element.scrollTop = element.scrollHeight; // focus on bottom
+            }
+          };
+        })(),
+        printErr: function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.error(text);
+        },
+        setStatus: function(text) {
+          // Do nothing
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        },
+        onRuntimeInitialized: async function() {
+            const outputElement = document.getElementById('output');
+            const inputElement = document.getElementById('input');
+
+            outputElement.innerHTML = '';
+
+            const processLine = Module.cwrap('process_line', 'string', ['string'], { async: true });
+            const get_input_buffer = Module.cwrap('get_input_buffer', 'number', []);
+            const input_buffer_ptr = get_input_buffer();
+
+            const initialOutput = await processLine('');
+            outputElement.innerHTML += initialOutput;
+
+            inputElement.addEventListener('keydown', async (event) => {
+                if (event.key === 'Enter') {
+                    const command = inputElement.value;
+                    inputElement.value = '';
+                    outputElement.innerHTML += `> ${command}\n`;
+                    outputElement.scrollTop = outputElement.scrollHeight;
+
+                    if (window.isAwaitingInput) {
+                        Module.stringToUTF8(command, input_buffer_ptr, 256);
+                        resolveInputPromise();
+                        createInputPromise();
+                    } else {
+                        const result = await processLine(command);
+                        if (result) {
+                            outputElement.innerHTML += result;
+                        }
+                    }
+                }
+            });
+
+            // Load and run the BASIC code
+            const codeLines = code.trim().split('\n');
+            for (const line of codeLines) {
+                if (line.trim()) {
+                    outputElement.innerHTML += `> ${line}\n`;
+                    const result = await processLine(line);
+                    if (result) {
+                        outputElement.innerHTML += result;
+                    }
+                }
+            }
+            const runResult = await processLine('RUN');
+            if (runResult) {
+                outputElement.innerHTML += runResult;
+            }
+            outputElement.scrollTop = outputElement.scrollHeight;
+        }
+      };
+      Module.setStatus('Downloading...');
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

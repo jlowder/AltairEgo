@@ -1,0 +1,3 @@
+note: optimized wasm was produced with:
+
+wasm-opt -Oz in.wasm -o out.wasm

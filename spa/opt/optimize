@@ -1,0 +1,7 @@
+#!/bin/bash
+
+n=$(grep -n 'data:application/octet-stream' "$1"  | cut -f1 -d: | tail -n1)
+sed -i "${n}d" "$1"
+sed -i "$((n - 1))r wasm.optimized" "$1"
+
+html-minifier --collapse-whitespace --remove-comments --minify-js true --minify-css true --output min.html "$1" && mv min.html "$1"
