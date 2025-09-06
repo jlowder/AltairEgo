@@ -214,21 +214,27 @@ const awariGame = `
 
       createInputPromise();
 
+      function scrollToBottom() {
+        const screenElement = document.querySelector('.screen');
+        if (screenElement) {
+          setTimeout(() => {
+            screenElement.scrollTop = screenElement.scrollHeight;
+          }, 0);
+        }
+      }
+
       var Module = {
         preRun: [],
         postRun: [],
         print: (function() {
           var outputElement = document.getElementById('output');
-          var screenElement = document.querySelector('.screen');
           if (outputElement) outputElement.innerHTML = ''; // clear browser cache
           return function(text) {
             if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
             console.log(text);
             if (outputElement) {
               outputElement.innerHTML += text + "\n";
-              if (screenElement) {
-                screenElement.scrollTop = screenElement.scrollHeight; // focus on bottom
-              }
+              scrollToBottom();
             }
           };
         })(),
@@ -246,19 +252,15 @@ const awariGame = `
         },
         onRuntimeInitialized: async function() {
             const outputElement = document.getElementById('output');
-            const screenElement = document.querySelector('.screen');
             const inputElement = document.getElementById('input');
-            const inputPrompt = document.getElementById('input-prompt');
 
             outputElement.innerHTML = '';
 
             const processLine = Module.cwrap('process_line', 'string', ['string'], { async: true });
-            const get_input_buffer = Module.cwrap('get_input_buffer', 'number', []);
-            const input_buffer_ptr = get_input_buffer();
 
             const initialOutput = await processLine('');
             outputElement.innerHTML += initialOutput;
-            if (screenElement) screenElement.scrollTop = screenElement.scrollHeight;
+            scrollToBottom();
 
             inputElement.addEventListener('keydown', async (event) => {
                 if (event.key === 'Enter') {
@@ -268,15 +270,16 @@ const awariGame = `
                     const commandWithPrompt = `>${command}\n`;
                     const existingContent = outputElement.innerHTML;
 
-                    // To avoid an extra newline, check if the content already ends with a newline
                     if (existingContent.endsWith('\n')) {
                         outputElement.innerHTML = existingContent + commandWithPrompt;
                     } else {
                         outputElement.innerHTML = existingContent + '\n' + commandWithPrompt;
                     }
-                    if (screenElement) screenElement.scrollTop = screenElement.scrollHeight;
+                    scrollToBottom();
 
                     if (window.isAwaitingInput) {
+                        const get_input_buffer = Module.cwrap('get_input_buffer', 'number', []);
+                        const input_buffer_ptr = get_input_buffer();
                         Module.stringToUTF8(command, input_buffer_ptr, 256);
                         resolveInputPromise();
                         createInputPromise();
@@ -289,7 +292,6 @@ const awariGame = `
                 }
             });
 
-            // Load and run the Awari game
             const awariLines = awariGame.trim().split('\n');
             for (const line of awariLines) {
                 if (line.trim()) {
@@ -304,7 +306,7 @@ const awariGame = `
             if (runResult) {
                 outputElement.innerHTML += runResult;
             }
-            if (screenElement) screenElement.scrollTop = screenElement.scrollHeight;
+            scrollToBottom();
         }
       };
       Module.setStatus('Downloading...');
