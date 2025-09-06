@@ -257,6 +257,8 @@ const awariGame = `
             outputElement.innerHTML = '';
 
             const processLine = Module.cwrap('process_line', 'string', ['string'], { async: true });
+            const get_input_buffer = Module.cwrap('get_input_buffer', 'number', []);
+            const input_buffer_ptr = get_input_buffer();
 
             const initialOutput = await processLine('');
             outputElement.innerHTML += initialOutput;
@@ -278,8 +280,6 @@ const awariGame = `
                     scrollToBottom();
 
                     if (window.isAwaitingInput) {
-                        const get_input_buffer = Module.cwrap('get_input_buffer', 'number', []);
-                        const input_buffer_ptr = get_input_buffer();
                         Module.stringToUTF8(command, input_buffer_ptr, 256);
                         resolveInputPromise();
                         createInputPromise();
