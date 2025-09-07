@@ -806,6 +806,7 @@ void AltairBasicInterpreter::executeNew() {
     variables.clearAll();
     dataItems.clear();
     dataPointer = 0;
+    currentLine = -1;
     
     while (!callStack.empty()) {
         callStack.pop();
@@ -829,6 +830,7 @@ void AltairBasicInterpreter::executeRun() {
         }
     }
     
+    currentLine = -1; // Always start RUN from the beginning
     executeProgram();
 }
 
