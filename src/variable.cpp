@@ -194,6 +194,7 @@ void VariableManager::clearAll() {
     numericVariables.clear();
     stringVariables.clear();
     arrays.clear();
+    stringArrays.clear();
     arrayDimensions.clear();
 }
 
