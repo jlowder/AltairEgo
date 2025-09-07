@@ -40,6 +40,10 @@
       .logo {
         cursor: pointer;
       }
+      .logo.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
       .logo svg {
         width: 50px;
         height: 50px;
@@ -49,6 +53,10 @@
       .logo:hover svg {
         transform: scale(1.1);
         filter: brightness(1.2);
+      }
+      .logo.disabled:hover svg {
+        transform: none;
+        filter: none;
       }
       h1 {
         margin: 0;

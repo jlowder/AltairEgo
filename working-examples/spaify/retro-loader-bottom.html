@@ -61,12 +61,16 @@
             scrollToBottom();
 
             logo.addEventListener('click', () => {
+                if (logo.classList.contains('disabled')) {
+                    return;
+                }
                 fileInput.click();
             });
 
             fileInput.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (file) {
+                    logo.classList.add('disabled');
                     const reader = new FileReader();
                     reader.onload = async (e) => {
                         await process_line("NEW");
@@ -80,6 +84,7 @@
                             }
                         };
                         scrollToBottom();
+                        logo.classList.remove('disabled');
                     };
                     reader.readAsText(file);
                 }
