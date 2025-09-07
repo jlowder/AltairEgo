@@ -71,10 +71,10 @@
                     reader.onload = async (e) => {
                         output.innerHTML = "";
                         const program = e.target.result;
-                        const lines = program.split('\\n');
+                        const lines = program.split('\n');
                         for(const line of lines) {
                             if (line.trim()) {
-                                output.innerHTML += `> ${line}\\n`;
+                                output.innerHTML += `> ${line}\n`;
                                 await process_line(line);
                             }
                         };
@@ -89,12 +89,12 @@
                     let command = input.value;
                     input.value = '';
 
-                    let command_display = `>${command}\\n`;
+                    let command_display = `>${command}\n`;
                     let current_output = output.innerHTML;
-                    if (current_output.endsWith('\\n')) {
+                    if (current_output.endsWith('\n')) {
                         output.innerHTML = current_output + command_display;
                     } else {
-                        output.innerHTML = current_output + "\\n" + command_display;
+                        output.innerHTML = current_output + "\n" + command_display;
                     }
                     scrollToBottom();
 
