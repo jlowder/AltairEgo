@@ -1,29 +1,8 @@
-<script>
-      document.getElementById('logo').addEventListener('click', () => {
-        document.getElementById('file-input').click();
-      });
-
-      document.getElementById('file-input').addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = async (e) => {
-            const output = document.getElementById('output');
-            const program = e.target.result;
-            output.innerText = "";
-            const lines = program.split('\n');
-            for(const line of lines) {
-              if (line.trim()) {
-                output.innerHTML += `> ${line}\\n`;
-                await window.Module.cwrap("process_line", "string", ["string"], {async: true})(line);
-              }
-            };
-          };
-          reader.readAsText(file);
-        }
-      });
-</script>
 <script type="text/javascript">
+    document.getElementById('logo').addEventListener('click', () => {
+      document.getElementById('file-input').click();
+    });
+
     var resolveInputPromise;
 
     function createInputPromise() {
@@ -54,7 +33,7 @@
                 if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
                 console.log(text);
                 if (element) {
-                    element.innerHTML += text + "\\n";
+                    element.innerHTML += text + "\n";
                     scrollToBottom();
                 }
             };
@@ -72,6 +51,8 @@
         onRuntimeInitialized: async function() {
             let output = document.getElementById('output');
             let input = document.getElementById('input');
+            let fileInput = document.getElementById('file-input');
+
             output.innerHTML = '';
             let process_line = Module.cwrap('process_line', 'string', ['string'], {
                 async: true
@@ -82,6 +63,26 @@
             let initial_output = await process_line("");
             output.innerHTML += initial_output;
             scrollToBottom();
+
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        output.innerHTML = "";
+                        const program = e.target.result;
+                        const lines = program.split('\\n');
+                        for(const line of lines) {
+                            if (line.trim()) {
+                                output.innerHTML += `> ${line}\\n`;
+                                await process_line(line);
+                            }
+                        };
+                        scrollToBottom();
+                    };
+                    reader.readAsText(file);
+                }
+            });
 
             input.addEventListener('keydown', async (e) => {
                 if (e.key === 'Enter') {
