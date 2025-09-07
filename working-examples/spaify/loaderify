@@ -1,0 +1,42 @@
+#!/bin/bash
+
+usage() {
+    echo "Usage: $0 [-h] [-o output_file]"
+    echo "  -h              Show this help message"
+    echo "  -o output_file  Specify output filename (default: spa/loader.html)"
+}
+
+output_file="spa/loader.html"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h)
+            usage
+            exit 0
+            ;;
+        -o)
+            output_file="$2"
+            shift 2
+            ;;
+        -*)
+            usage
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+if [ $# -ne 0 ]; then
+    usage
+    exit 1
+fi
+
+trap "rm -f shell.html" EXIT
+
+# first, build the shell
+cat working-examples/spaify/retro-loader-top.html working-examples/spaify/retro-loader-bottom.html > shell.html
+
+# second, build with emscripten
+em++ -I src ../../src/*.cpp -o "$output_file" -s "EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'stringToUTF8']" -s "ASYNCIFY_IMPORTS=['await_input_from_js']" --shell-file shell.html -s SINGLE_FILE=1 -s ASYNCIFY -fexceptions
