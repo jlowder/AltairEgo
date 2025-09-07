@@ -33,10 +33,13 @@ if [ $# -ne 0 ]; then
     exit 1
 fi
 
-trap "rm -f shell.html" EXIT
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+REPO_ROOT=$( cd -- "$SCRIPT_DIR/../../" &> /dev/null && pwd )
+
+trap "rm -f $SCRIPT_DIR/shell.html" EXIT
 
 # first, build the shell
-cat working-examples/spaify/retro-loader-top.html working-examples/spaify/retro-loader-bottom.html > shell.html
+cat "$SCRIPT_DIR/retro-loader-top.html" "$SCRIPT_DIR/retro-loader-bottom.html" > "$SCRIPT_DIR/shell.html"
 
 # second, build with emscripten
-em++ -I src ../../src/*.cpp -o "$output_file" -s "EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'stringToUTF8']" -s "ASYNCIFY_IMPORTS=['await_input_from_js']" --shell-file shell.html -s SINGLE_FILE=1 -s ASYNCIFY -fexceptions
+em++ -I "$REPO_ROOT/src" "$REPO_ROOT"/src/*.cpp -o "$REPO_ROOT/$output_file" -s "EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'stringToUTF8']" -s "ASYNCIFY_IMPORTS=['await_input_from_js']" --shell-file "$SCRIPT_DIR/shell.html" -s SINGLE_FILE=1 -s ASYNCIFY -fexceptions
