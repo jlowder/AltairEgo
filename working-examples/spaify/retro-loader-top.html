@@ -44,6 +44,11 @@
         width: 50px;
         height: 50px;
         fill: #f0f0f0;
+        transition: transform 0.2s, filter 0.2s;
+      }
+      .logo:hover svg {
+        transform: scale(1.1);
+        filter: brightness(1.2);
       }
       h1 {
         margin: 0;
@@ -110,7 +115,7 @@
   <body>
     <div class="terminal">
       <div class="header">
-        <div class="logo" id="logo">
+        <div class="logo" id="logo" title="Load BASIC program">
           <svg version="1.1" id="_x36_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                viewBox="0 0 512 512"  xml:space="preserve">
           <g>
