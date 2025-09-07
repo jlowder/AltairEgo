@@ -94,6 +94,7 @@
             input.addEventListener('keydown', async (e) => {
                 if (e.key === 'Enter') {
                     let command = input.value;
+                    let upperCommand = command.toUpperCase().trim();
                     input.value = '';
 
                     let command_display = `>${command}\n`;
@@ -110,9 +111,15 @@
                         resolveInputPromise();
                         createInputPromise();
                     } else {
+                        if (upperCommand === 'RUN') {
+                            logo.classList.add('disabled');
+                        }
                         let result = await process_line(command);
                         if (result) {
                             output.innerHTML += result;
+                        }
+                        if (upperCommand === 'RUN') {
+                            logo.classList.remove('disabled');
                         }
                     }
                 }
