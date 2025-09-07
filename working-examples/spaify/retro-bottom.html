@@ -1,0 +1,115 @@
+`;
+    </script>
+
+    <script type='text/javascript'>
+      window.isAwaitingInput = false;
+      var resolveInputPromise;
+
+      function createInputPromise() {
+        window.awaitInputPromise = new Promise(resolve => {
+            resolveInputPromise = resolve;
+        });
+      }
+
+      createInputPromise();
+
+      function scrollToBottom() {
+        const screenElement = document.querySelector('.screen');
+        if (screenElement) {
+          setTimeout(() => {
+            screenElement.scrollTop = screenElement.scrollHeight;
+          }, 0);
+        }
+      }
+
+      var Module = {
+        preRun: [],
+        postRun: [],
+        print: (function() {
+          var outputElement = document.getElementById('output');
+          if (outputElement) outputElement.innerHTML = ''; // clear browser cache
+          return function(text) {
+            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+            console.log(text);
+            if (outputElement) {
+              outputElement.innerHTML += text + "\n";
+              scrollToBottom();
+            }
+          };
+        })(),
+        printErr: function(text) {
+          if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+          console.error(text);
+        },
+        setStatus: function(text) {
+          // Do nothing
+        },
+        totalDependencies: 0,
+        monitorRunDependencies: function(left) {
+          this.totalDependencies = Math.max(this.totalDependencies, left);
+          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+        },
+        onRuntimeInitialized: async function() {
+            const outputElement = document.getElementById('output');
+            const inputElement = document.getElementById('input');
+
+            outputElement.innerHTML = '';
+
+            const processLine = Module.cwrap('process_line', 'string', ['string'], { async: true });
+            const get_input_buffer = Module.cwrap('get_input_buffer', 'number', []);
+            const input_buffer_ptr = get_input_buffer();
+
+            const initialOutput = await processLine('');
+            outputElement.innerHTML += initialOutput;
+            scrollToBottom();
+
+            inputElement.addEventListener('keydown', async (event) => {
+                if (event.key === 'Enter') {
+                    const command = inputElement.value;
+                    inputElement.value = '';
+
+                    const commandWithPrompt = `>${command}\n`;
+                    const existingContent = outputElement.innerHTML;
+
+                    if (existingContent.endsWith('\n')) {
+                        outputElement.innerHTML = existingContent + commandWithPrompt;
+                    } else {
+                        outputElement.innerHTML = existingContent + '\n' + commandWithPrompt;
+                    }
+                    scrollToBottom();
+
+                    if (window.isAwaitingInput) {
+                        Module.stringToUTF8(command, input_buffer_ptr, 256);
+                        resolveInputPromise();
+                        createInputPromise();
+                    } else {
+                        const result = await processLine(command);
+                        if (result) {
+                            outputElement.innerHTML += result;
+                        }
+                    }
+                }
+            });
+
+            const awariLines = awariGame.trim().split('\n');
+            for (const line of awariLines) {
+                if (line.trim()) {
+                    outputElement.innerHTML += `> ${line}\n`;
+                    const result = await processLine(line);
+                    if (result) {
+                        outputElement.innerHTML += result;
+                    }
+                }
+            }
+            const runResult = await processLine('RUN');
+            if (runResult) {
+                outputElement.innerHTML += runResult;
+            }
+            scrollToBottom();
+        }
+      };
+      Module.setStatus('Downloading...');
+    </script>
+    {{{ SCRIPT }}}
+  </body>
+</html>

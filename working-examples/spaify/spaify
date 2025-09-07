@@ -1,31 +1,39 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: $0 [-h] [-o output_file] input_file"
+    echo "Usage: $0 [-h] [-o output_file] [--simple] input_file"
     echo "  -h              Show this help message"
     echo "  -o output_file  Specify output filename (default: input_file with .bas replaced by .html)"
+    echo "  --simple        Use simple template instead of retro template"
     echo "  input_file      Input .bas file to process"
 }
 
 output_file=""
+simple_mode=false
 
-while getopts "ho:" opt; do
-    case $opt in
-        h)
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h)
             usage
             exit 0
             ;;
-        o)
-            output_file="$OPTARG"
+        -o)
+            output_file="$2"
+            shift 2
             ;;
-        \?)
+        --simple)
+            simple_mode=true
+            shift
+            ;;
+        -*)
             usage
             exit 1
             ;;
+        *)
+            break
+            ;;
     esac
 done
-
-shift $((OPTIND-1))
 
 if [ $# -ne 1 ]; then
     usage
@@ -47,7 +55,11 @@ fi
 trap "rm -f shell.html" EXIT
 
 # first, build the shell
-cat shell-top.html "$input_file" shell-bottom.html > shell.html
+if [ "$simple_mode" = true ]; then
+    cat simple-top.html "$input_file" simple-bottom.html > shell.html
+else
+    cat retro-top.html "$input_file" retro-bottom.html > shell.html
+fi
 
 # second, build with emscripten
 em++ -I src ../../src/*.cpp -o "$output_file" -s "EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'stringToUTF8']" -s "ASYNCIFY_IMPORTS=['await_input_from_js']" --shell-file shell.html -s SINGLE_FILE=1 -s ASYNCIFY -fexceptions
