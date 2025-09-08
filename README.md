@@ -37,20 +37,33 @@ altair_ego
 ```bash
 altair_ego program.bas
 ```
-### WebApp Mode
-
-[mastermind.bas](https://jlowder.github.io/AltairEgo/spa/mastermind.html)
-
 ## Example Programs
 
-The `working-examples/` directory contains several classic BASIC games that demonstrate the interpreter's capabilities:
+The `working-examples/` directory contains several classic BASIC games that demonstrate the interpreter's capabilities. You can run them from the command line or play them directly in your browser.
 
-- **mastermind.bas** - Code-breaking logic game
-- **amazing.bas** - Maze generation program
-- **awari.bas** - Ancient African strategy game
-- **depth_charge.bas** - Naval warfare simulation
-- **calendar.bas** - Calendar display utility
-- **3dplot.bas** - 3D plotting demonstration
+- **3dplot.bas** - 3D plotting demonstration.
+  - [Source](working-examples/3dplot.bas)
+  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/3dplot.html)
+
+- **amazing.bas** - Maze generation program.
+  - [Source](working-examples/amazing.bas)
+  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/amazing.html)
+
+- **awari.bas** - Ancient African strategy game.
+  - [Source](working-examples/awari.bas)
+  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/awari.html)
+
+- **calendar.bas** - Calendar display utility.
+  - [Source](working-examples/calendar.bas)
+  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/calendar.html)
+
+- **depth_charge.bas** - Naval warfare simulation.
+  - [Source](working-examples/depth_charge.bas)
+  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/depth_charge.html)
+
+- **mastermind.bas** - Code-breaking logic game.
+  - [Source](working-examples/mastermind.bas)
+  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/mastermind.html)
 
 ### Running an Example
 
