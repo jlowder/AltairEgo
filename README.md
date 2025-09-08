@@ -167,6 +167,14 @@ src/
 ├── lexer.cpp         # Tokenization and lexical analysis
 ├── functions.cpp     # Built-in BASIC functions
 └── variable.cpp      # Variable management system
+
+spa/
+├── *.html            # Standalone HTML versions of the example games
+└── opt/              # Scripts and instructions for optimizing the Wasm output
+
+working-examples/
+├── *.bas             # Example BASIC programs
+└── spaify/           # Scripts to build the web applications
 ```
 
 ## Compatibility
