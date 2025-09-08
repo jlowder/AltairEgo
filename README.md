@@ -37,6 +37,9 @@ altair_ego
 ```bash
 altair_ego program.bas
 ```
+### WebApp Mode
+
+[mastermind.bas](https://jlowder.github.io/AltairEgo/spa/mastermind.html)
 
 ## Example Programs
 
