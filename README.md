@@ -14,10 +14,11 @@ AltairEgo is a faithful implementation of vintage BASIC, capturing the essence o
 - Mathematical functions and expressions
 - String and numeric variable support
 - Compatible with programs from "101 Basic Computer Games"
+- Web application support via Emscripten
 
 ## Building
 
-AltairEgo uses GNU Autotools for building:
+AltairEgo uses GNU Autotools for building the command-line interpreter:
 
 ```bash
 ./autogen.sh
@@ -25,6 +26,32 @@ AltairEgo uses GNU Autotools for building:
 make
 sudo make install
 ```
+
+### Building for the Web (Emscripten)
+
+To compile the interpreter as a web application, you'll need the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html). 
+
+The `working-examples/spaify` directory contains scripts to facilitate building Single Page Applications (SPAs) from BASIC source files:
+
+- **`spaify`**: This script takes a `.bas` file and embeds it into a standalone HTML file. It offers both a retro-themed template and a simple one.
+
+  ```bash
+  ./working-examples/spaify/spaify working-examples/amazing.bas
+  ```
+
+- **`loaderify`**: This script builds `spa/loader.html`, a generic loader page that can run any of the example programs.
+
+  ```bash
+  ./working-examples/spaify/loaderify
+  ```
+
+For more direct control, you can use the `em++` command. For example:
+
+```bash
+em++ -I src src/*.cpp -o altair_ego.html -s "EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap', 'stringToUTF8']" -s "ASYNCIFY_IMPORTS=['await_input_from_js']" --shell-file shell.html -s SINGLE_FILE=1 -s ASYNCIFY -fexceptions
+```
+
+Additionally, the `spa/opt` directory contains a `README` with instructions on how to optimize the generated WebAssembly using `wasm-opt`.
 
 ## Usage
 
@@ -43,27 +70,27 @@ The `working-examples/` directory contains several classic BASIC games that demo
 
 - **3dplot.bas** - 3D plotting demonstration.
   - [Source](working-examples/3dplot.bas)
-  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/3dplot.html)
+  - <a href="https://jlowder.github.io/AltairEgo/spa/3dplot.html" target="_blank">Play in browser</a>
 
 - **amazing.bas** - Maze generation program.
   - [Source](working-examples/amazing.bas)
-  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/amazing.html)
+  - <a href="https://jlowder.github.io/AltairEgo/spa/amazing.html" target="_blank">Play in browser</a>
 
 - **awari.bas** - Ancient African strategy game.
   - [Source](working-examples/awari.bas)
-  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/awari.html)
+  - <a href="https://jlowder.github.io/AltairEgo/spa/awari.html" target="_blank">Play in browser</a>
 
 - **calendar.bas** - Calendar display utility.
   - [Source](working-examples/calendar.bas)
-  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/calendar.html)
+  - <a href="https://jlowder.github.io/AltairEgo/spa/calendar.html" target="_blank">Play in browser</a>
 
 - **depth_charge.bas** - Naval warfare simulation.
   - [Source](working-examples/depth_charge.bas)
-  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/depth_charge.html)
+  - <a href="https://jlowder.github.io/AltairEgo/spa/depth_charge.html" target="_blank">Play in browser</a>
 
 - **mastermind.bas** - Code-breaking logic game.
   - [Source](working-examples/mastermind.bas)
-  - [Play in browser](https://jlowder.github.io/AltairEgo/spa/mastermind.html)
+  - <a href="https://jlowder.github.io/AltairEgo/spa/mastermind.html" target="_blank">Play in browser</a>
 
 ### Running an Example
 
