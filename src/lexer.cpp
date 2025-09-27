@@ -227,6 +227,18 @@ bool Lexer::canSplitIdentifierWithEmbeddedKeyword(const std::string& identifier,
             std::string substr = identifier.substr(0, kw.length());
             std::transform(substr.begin(), substr.end(), substr.begin(), ::toupper);
             if (substr == kw) {
+                // Special case: FN should not be treated as a keyword prefix
+                // when followed by alphabetic characters, because FND, FNR, etc.
+                // are complete function names, not "FN" keyword + variable
+                if (kw == "FN") {
+                    if (kw.length() < identifier.length()) {
+                        char nextChar = identifier[kw.length()];
+                        if (std::isalpha(nextChar)) {
+                            continue; // Skip FN when followed by alphabetic character
+                        }
+                    }
+                }
+                
                 // Found keyword at the beginning
                 prefix = "";
                 keyword = kw;
