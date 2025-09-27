@@ -23,3 +23,9 @@ config.h
 Makefile
 src/Makefile
 src/.deps/*.Po
+config.h.in~
+configure~
+
+# Logs
+tests/run_all_tests.sh.log
+test-suite.log
