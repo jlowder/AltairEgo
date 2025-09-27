@@ -1160,6 +1160,13 @@ std::string AltairBasicInterpreter::evaluateStringExpression(std::shared_ptr<AST
                 
                 return MathFunctions::callStringFunction(expr->value, numArgs, strArgs);
             }
+        
+        case NODE_BINARY_OP:
+            if (expr->operator_type == OP_PLUS) {
+                return evaluateStringExpression(expr->children[0]) + evaluateStringExpression(expr->children[1]);
+            } else {
+                throw std::runtime_error("TYPE MISMATCH");
+            }
             
         default:
             throw std::runtime_error("TYPE MISMATCH");
