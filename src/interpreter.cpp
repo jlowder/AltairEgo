@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 AltairBasicInterpreter::AltairBasicInterpreter() 
-    : dataPointer(0), currentLine(-1), currentStatementIndex(0), running(false), stopExecution(false), returningFromSubroutine(false), debug(false), m_currentColumn(0) {}
+    : dataPointer(0), currentLine(-1), currentStatementIndex(0), running(false), stopExecution(false), returningFromSubroutine(false), debug(false), m_currentColumn(0), on_error_goto_line(-1) {}
 
 void AltairBasicInterpreter::processLine(const std::string& input) {
     if (input == "DEBUG ON") {
@@ -95,6 +95,17 @@ bool AltairBasicInterpreter::isCommand(std::shared_ptr<ASTNode> stmt) {
 }
 
 void AltairBasicInterpreter::executeStatement(std::shared_ptr<ASTNode> stmt) {
+    if (stmt->type == NODE_ON_ERROR_GOTO) {
+        if (stmt->children.empty()) return;
+        auto lineNumNode = stmt->children[0];
+        int lineNum = static_cast<int>(evaluateExpression(lineNumNode));
+        if (lineNum == 0) {
+            on_error_goto_line = -1;
+        } else {
+            on_error_goto_line = lineNum;
+        }
+        return;
+    }
     DEBUG_PRINT("Executing statement: " << stmt->keyword);
     switch (stmt->keyword) {
         case KW_PRINT:
@@ -693,17 +704,27 @@ void AltairBasicInterpreter::executeProgram() {
             break;
         }
         
-        int originalLine = currentLine;
-        executeLine(it->second.ast);
-        
-        // Only move to next line if currentLine wasn't changed by GOTO/GOSUB/NEXT
-        if (currentLine == originalLine) {
-            auto nextIt = program.upper_bound(currentLine);
-            if (nextIt != program.end()) {
-                currentLine = nextIt->first;
-                currentStatementIndex = 0; // Reset statement index for new line
+        try {
+            int originalLine = currentLine;
+            executeLine(it->second.ast);
+
+            // Only move to next line if currentLine wasn't changed by GOTO/GOSUB/NEXT
+            if (currentLine == originalLine) {
+                auto nextIt = program.upper_bound(currentLine);
+                if (nextIt != program.end()) {
+                    currentLine = nextIt->first;
+                    currentStatementIndex = 0; // Reset statement index for new line
+                } else {
+                    break;
+                }
+            }
+        } catch (const std::exception& e) {
+            if (on_error_goto_line != -1) {
+                std::cout << e.what() << std::endl;
+                stopExecution = true;
+                on_error_goto_line = -1; // Reset error handler
             } else {
-                break;
+                throw; // Re-throw to be caught by processLine
             }
         }
     }

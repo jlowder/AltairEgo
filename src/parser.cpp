@@ -513,6 +513,24 @@ std::shared_ptr<ASTNode> Parser::parseOnStatement() {
     auto stmt = std::make_shared<ASTNode>(NODE_STATEMENT);
     stmt->keyword = KW_ON;
     advance(); // Skip ON
+
+    if (matchKeyword(KW_ERROR)) {
+        advance(); // Skip ERROR
+        if (matchKeyword(KW_GOTO)) {
+            advance(); // Skip GOTO
+            if (match(TOKEN_NUMBER)) {
+                auto onErrorStmt = std::make_shared<ASTNode>(NODE_ON_ERROR_GOTO);
+                auto lineNum = std::make_shared<ASTNode>(NODE_NUMBER, getCurrentToken().value);
+                onErrorStmt->children.push_back(lineNum);
+                advance();
+                return onErrorStmt;
+            } else {
+                syntaxError();
+            }
+        } else {
+            syntaxError();
+        }
+    }
     
     auto expr = parseExpression();
     stmt->children.push_back(expr);
@@ -538,6 +556,8 @@ std::shared_ptr<ASTNode> Parser::parseOnStatement() {
         }
         
         stmt->children.push_back(action);
+    } else {
+        syntaxError();
     }
     
     return stmt;
