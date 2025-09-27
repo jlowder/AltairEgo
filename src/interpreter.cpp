@@ -34,7 +34,7 @@ void AltairBasicInterpreter::processLine(const std::string& input) {
 
     try {
         auto tokens = lexer.tokenize(input);
-        auto ast = parser.parse(tokens);
+        auto ast = parser.parse(input, tokens);
         
         if (!ast || ast->children.empty()) {
             return;

@@ -38,6 +38,7 @@ class Parser {
 private:
     std::vector<Token> tokens;
     size_t current;
+    std::string sourceCode;
     
     Token getCurrentToken();
     Token peekToken();
@@ -45,6 +46,8 @@ private:
     bool match(TokenType type);
     bool matchKeyword(KeywordType keyword);
     bool matchOperator(OperatorType op);
+    std::string getLineText(int lineNumber);
+    void syntaxError();
     
     std::shared_ptr<ASTNode> parseProgram();
     std::shared_ptr<ASTNode> parseLine();
@@ -85,7 +88,7 @@ private:
     
 public:
     Parser();
-    std::shared_ptr<ASTNode> parse(const std::vector<Token>& tokenList);
+    std::shared_ptr<ASTNode> parse(const std::string& source, const std::vector<Token>& tokenList);
 };
 
 #endif

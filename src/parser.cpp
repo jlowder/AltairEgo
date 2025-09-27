@@ -2,6 +2,8 @@
 #include "functions.h"
 #include <stdexcept>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 Parser::Parser() : current(0) {}
 
@@ -37,7 +39,32 @@ bool Parser::matchOperator(OperatorType op) {
     return match(TOKEN_OPERATOR) && getCurrentToken().operator_type == op;
 }
 
-std::shared_ptr<ASTNode> Parser::parse(const std::vector<Token>& tokenList) {
+std::string Parser::getLineText(int lineNumber) {
+    std::stringstream ss(sourceCode);
+    std::string line;
+    int currentLine = 1;
+    while (std::getline(ss, line)) {
+        if (currentLine == lineNumber) {
+            return line;
+        }
+        currentLine++;
+    }
+    return "";
+}
+
+void Parser::syntaxError() {
+    Token token = getCurrentToken();
+    int lineNumber = token.line;
+    std::string lineText = getLineText(lineNumber);
+    // Trim leading/trailing whitespace from lineText for cleaner output
+    lineText.erase(0, lineText.find_first_not_of(" \t\n\r"));
+    lineText.erase(lineText.find_last_not_of(" \t\n\r") + 1);
+    std::string errorMessage = "SYNTAX ERROR in line " + std::to_string(lineNumber) + ": " + lineText;
+    throw std::runtime_error(errorMessage);
+}
+
+std::shared_ptr<ASTNode> Parser::parse(const std::string& source, const std::vector<Token>& tokenList) {
+    sourceCode = source;
     tokens = tokenList;
     current = 0;
     return parseProgram();
@@ -141,7 +168,8 @@ std::shared_ptr<ASTNode> Parser::parseStatement() {
         return parseLetStatement();
     }
     
-    throw std::runtime_error("SYNTAX ERROR");
+    syntaxError();
+    return nullptr; // Should be unreachable
 }
 
 std::shared_ptr<ASTNode> Parser::parsePrintStatement() {
@@ -232,7 +260,7 @@ std::shared_ptr<ASTNode> Parser::parseLetStatement() {
             if (match(TOKEN_DELIMITER) && getCurrentToken().value == ")") {
                 advance(); // Skip )
             } else {
-                throw std::runtime_error("SYNTAX ERROR");
+                syntaxError();
             }
             
             if (matchOperator(OP_EQUAL)) {
@@ -246,7 +274,7 @@ std::shared_ptr<ASTNode> Parser::parseLetStatement() {
                 
                 stmt->children.push_back(assignment);
             } else {
-                throw std::runtime_error("SYNTAX ERROR");
+                syntaxError();
             }
         } else if (matchOperator(OP_EQUAL)) {
             // Regular variable assignment: A = 10
@@ -260,10 +288,10 @@ std::shared_ptr<ASTNode> Parser::parseLetStatement() {
             
             stmt->children.push_back(assignment);
         } else {
-            throw std::runtime_error("SYNTAX ERROR");
+            syntaxError();
         }
     } else {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     
     return stmt;
@@ -302,7 +330,7 @@ std::shared_ptr<ASTNode> Parser::parseIfStatement() {
             }
         }
     } else {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     
     return stmt;
@@ -336,13 +364,13 @@ std::shared_ptr<ASTNode> Parser::parseForStatement() {
                     stmt->children.push_back(stepExpr);
                 }
             } else {
-                throw std::runtime_error("SYNTAX ERROR");
+                syntaxError();
             }
         } else {
-            throw std::runtime_error("SYNTAX ERROR");
+            syntaxError();
         }
     } else {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     
     return stmt;
@@ -358,7 +386,7 @@ std::shared_ptr<ASTNode> Parser::parseGotoStatement() {
         stmt->children.push_back(lineNum);
         advance();
     } else {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     
     return stmt;
@@ -374,7 +402,7 @@ std::shared_ptr<ASTNode> Parser::parseGosubStatement() {
         stmt->children.push_back(lineNum);
         advance();
     } else {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     
     return stmt;
@@ -544,7 +572,7 @@ std::shared_ptr<ASTNode> Parser::parseVariableList() {
             if (match(TOKEN_DELIMITER) && getCurrentToken().value == ")") {
                 advance(); // Skip )
             } else {
-                throw std::runtime_error("SYNTAX ERROR");
+                syntaxError();
             }
             
             varList->children.push_back(arrayAccess);
@@ -743,7 +771,7 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
                 if (match(TOKEN_DELIMITER) && getCurrentToken().value == ")") {
                     advance(); // Skip )
                 } else {
-                    throw std::runtime_error("SYNTAX ERROR");
+                    syntaxError();
                 }
                 
                 return func;
@@ -767,7 +795,7 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
                 if (match(TOKEN_DELIMITER) && getCurrentToken().value == ")") {
                     advance(); // Skip )
                 } else {
-                    throw std::runtime_error("SYNTAX ERROR");
+                    syntaxError();
                 }
                 
                 return func;
@@ -790,7 +818,7 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
                 if (match(TOKEN_DELIMITER) && getCurrentToken().value == ")") {
                     advance(); // Skip )
                 } else {
-                    throw std::runtime_error("SYNTAX ERROR");
+                    syntaxError();
                 }
                 
                 return arrayAccess;
@@ -808,7 +836,7 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
             advance(); // Skip )
             return expr;
         } else {
-            throw std::runtime_error("SYNTAX ERROR");
+            syntaxError();
         }
     }
     
@@ -833,7 +861,8 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
         return unary;
     }
     
-    throw std::runtime_error("SYNTAX ERROR");
+    syntaxError();
+    return nullptr; // Should be unreachable
 }
 
 std::shared_ptr<ASTNode> Parser::parseListStatement() {
@@ -872,14 +901,14 @@ std::shared_ptr<ASTNode> Parser::parseDimStatement() {
     // Parse array declarations: DIM A(10), B(20), C(5)
     do {
         if (!match(TOKEN_VARIABLE)) {
-            throw std::runtime_error("SYNTAX ERROR");
+            syntaxError();
         }
         
         auto arrayName = std::make_shared<ASTNode>(NODE_VARIABLE, getCurrentToken().value);
         advance();
         
         if (!match(TOKEN_DELIMITER) || getCurrentToken().value != "(") {
-            throw std::runtime_error("SYNTAX ERROR");
+            syntaxError();
         }
         advance(); // Skip (
         
@@ -899,7 +928,7 @@ std::shared_ptr<ASTNode> Parser::parseDimStatement() {
         } while (true);
         
         if (!match(TOKEN_DELIMITER) || getCurrentToken().value != ")") {
-            throw std::runtime_error("SYNTAX ERROR");
+            syntaxError();
         }
         advance(); // Skip )
         stmt->children.push_back(dimDecl);
@@ -921,7 +950,7 @@ std::shared_ptr<ASTNode> Parser::parseDefStatement() {
     
     // Parse function name (e.g., FNA)
     if (!match(TOKEN_VARIABLE)) {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     auto funcName = std::make_shared<ASTNode>(NODE_VARIABLE, getCurrentToken().value);
     stmt->children.push_back(funcName);
@@ -929,25 +958,25 @@ std::shared_ptr<ASTNode> Parser::parseDefStatement() {
     
     // Parse parameter list: (Z)
     if (!match(TOKEN_DELIMITER) || getCurrentToken().value != "(") {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     advance(); // Skip (
     
     if (!match(TOKEN_VARIABLE)) {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     auto param = std::make_shared<ASTNode>(NODE_VARIABLE, getCurrentToken().value);
     stmt->children.push_back(param);
     advance();
     
     if (!match(TOKEN_DELIMITER) || getCurrentToken().value != ")") {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     advance(); // Skip )
     
     // Parse = sign
     if (!matchOperator(OP_EQUAL)) {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     advance();
     

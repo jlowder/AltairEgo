@@ -1,6 +1,8 @@
 #include "lexer.h"
 #include <cctype>
 #include <stdexcept>
+#include <sstream>
+#include <string>
 
 std::map<std::string, KeywordType> Lexer::keywords;
 
@@ -41,6 +43,28 @@ void Lexer::initializeKeywords() {
     keywords["FN"] = KW_FN;
     keywords["ON"] = KW_ON;
     keywords["STEP"] = KW_STEP;
+}
+
+std::string Lexer::getLineText(int lineNumber) {
+    std::stringstream ss(input);
+    std::string line;
+    int currentLine = 1;
+    while (std::getline(ss, line)) {
+        if (currentLine == lineNumber) {
+            return line;
+        }
+        currentLine++;
+    }
+    return "";
+}
+
+void Lexer::syntaxError() {
+    std::string lineText = getLineText(line);
+    // Trim leading/trailing whitespace from lineText for cleaner output
+    lineText.erase(0, lineText.find_first_not_of(" \t\n\r"));
+    lineText.erase(lineText.find_last_not_of(" \t\n\r") + 1);
+    std::string errorMessage = "SYNTAX ERROR in line " + std::to_string(line) + ": " + lineText;
+    throw std::runtime_error(errorMessage);
 }
 
 void Lexer::setInput(const std::string& text) {
@@ -107,7 +131,7 @@ Token Lexer::readString() {
     if (currentChar() == '"') {
         advance(); // Skip closing quote
     } else {
-        throw std::runtime_error("SYNTAX ERROR");
+        syntaxError();
     }
     
     return Token(TOKEN_STRING, str, line, column);
@@ -214,7 +238,8 @@ Token Lexer::nextToken() {
     // Unknown character
     std::string unknown(1, ch);
     advance();
-    throw std::runtime_error("SYNTAX ERROR");
+    syntaxError();
+    return Token(); // Should be unreachable
 }
 
 std::vector<Token> Lexer::tokenize(const std::string& text) {
