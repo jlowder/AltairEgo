@@ -636,6 +636,7 @@ std::shared_ptr<ASTNode> Parser::parseLogicalOr() {
     
     while (matchKeyword(KW_OR)) {
         auto op = std::make_shared<ASTNode>(NODE_BINARY_OP);
+        op->operator_type = OP_OR;
         op->value = "OR";
         advance();
         
@@ -653,6 +654,7 @@ std::shared_ptr<ASTNode> Parser::parseLogicalAnd() {
     
     while (matchKeyword(KW_AND)) {
         auto op = std::make_shared<ASTNode>(NODE_BINARY_OP);
+        op->operator_type = OP_AND;
         op->value = "AND";
         advance();
         

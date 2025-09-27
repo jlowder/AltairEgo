@@ -957,6 +957,8 @@ double AltairBasicInterpreter::evaluateExpression(std::shared_ptr<ASTNode> expr)
                     case OP_LESS_EQUAL: return (left <= right) ? -1.0 : 0.0;
                     case OP_GREATER: return (left > right) ? -1.0 : 0.0;
                     case OP_GREATER_EQUAL: return (left >= right) ? -1.0 : 0.0;
+                    case OP_AND: return (left != 0.0 && right != 0.0) ? -1.0 : 0.0;
+                    case OP_OR: return (left != 0.0 || right != 0.0) ? -1.0 : 0.0;
                     default: throw std::runtime_error("SYNTAX ERROR");
                 }
             }
