@@ -50,10 +50,12 @@ private:
     int column;
     static std::map<std::string, KeywordType> keywords;
     
+    std::string getLineText(int lineNumber);
     char currentChar();
     char peekChar();
     void advance();
     void skipWhitespace();
+    void syntaxError();
     Token readNumber();
     Token readString();
     Token readIdentifier();
