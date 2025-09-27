@@ -216,6 +216,103 @@ bool Lexer::canSplitIdentifier(const std::string& identifier, std::string& keywo
     return false;
 }
 
+bool Lexer::canSplitIdentifierWithEmbeddedKeyword(const std::string& identifier, std::string& prefix, std::string& keyword, std::string& suffix) {
+    // Check if identifier contains a keyword embedded within it (like T9THENT9 -> T9 + THEN + T9)
+    // or multiple keywords in sequence (like ONIGOTO2300 -> ON + I + GOTO + 2300)
+    
+    // First, try to find a keyword at the beginning
+    for (const auto& pair : keywords) {
+        const std::string& kw = pair.first;
+        if (identifier.length() >= kw.length()) {
+            std::string substr = identifier.substr(0, kw.length());
+            std::transform(substr.begin(), substr.end(), substr.begin(), ::toupper);
+            if (substr == kw) {
+                // Found keyword at the beginning
+                prefix = "";
+                keyword = kw;
+                suffix = identifier.substr(kw.length());
+                return true;
+            }
+        }
+    }
+    
+    // Then, try to find a keyword embedded within the identifier
+    for (const auto& pair : keywords) {
+        const std::string& kw = pair.first;
+        if (identifier.length() > kw.length()) {
+            // Look for the keyword at any position within the identifier
+            for (size_t i = 1; i <= identifier.length() - kw.length(); i++) {
+                std::string substr = identifier.substr(i, kw.length());
+                std::transform(substr.begin(), substr.end(), substr.begin(), ::toupper);
+                if (substr == kw) {
+                    // Found the keyword at position i
+                    prefix = identifier.substr(0, i);
+                    keyword = kw;
+                    suffix = identifier.substr(i + kw.length());
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void Lexer::splitIdentifierRecursively(const std::string& identifier, std::vector<Token>& tokens) {
+    // Check if this identifier can be split with embedded keyword
+    std::string prefix, keyword, suffix;
+    if (canSplitIdentifierWithEmbeddedKeyword(identifier, prefix, keyword, suffix)) {
+        // Recursively split the prefix if it's not empty
+        if (!prefix.empty()) {
+            splitIdentifierRecursively(prefix, tokens);
+        }
+        
+        // Add the keyword token
+        auto it = keywords.find(keyword);
+        Token keywordToken(TOKEN_KEYWORD, keyword, line, column);
+        keywordToken.keyword = it->second;
+        tokens.push_back(keywordToken);
+        
+        // Recursively split the suffix if it's not empty
+        if (!suffix.empty()) {
+            splitIdentifierRecursively(suffix, tokens);
+        }
+        return;
+    }
+    
+    // Check if this identifier can be split (like TO9 -> TO + 9)
+    std::string keyword2, remainder;
+    if (canSplitIdentifier(identifier, keyword2, remainder)) {
+        // Add the keyword token
+        auto it = keywords.find(keyword2);
+        Token keywordToken(TOKEN_KEYWORD, keyword2, line, column);
+        keywordToken.keyword = it->second;
+        tokens.push_back(keywordToken);
+        
+        // Add the number token
+        Token numberToken(TOKEN_NUMBER, remainder, line, column);
+        tokens.push_back(numberToken);
+        return;
+    }
+    
+    // Check if it's a complete keyword
+    auto it = keywords.find(identifier);
+    if (it != keywords.end()) {
+        Token token(TOKEN_KEYWORD, identifier, line, column);
+        token.keyword = it->second;
+        tokens.push_back(token);
+        return;
+    }
+    
+    // It's a variable or number
+    if (!identifier.empty() && std::isdigit(identifier[0])) {
+        Token token(TOKEN_NUMBER, identifier, line, column);
+        tokens.push_back(token);
+    } else {
+        Token token(TOKEN_VARIABLE, identifier, line, column);
+        tokens.push_back(token);
+    }
+}
+
 Token Lexer::readIdentifier() {
     std::string identifier;
     
@@ -224,26 +321,18 @@ Token Lexer::readIdentifier() {
         advance();
     }
     
-    // Check if this identifier can be split (like TO9 -> TO + 9)
-    std::string keyword, remainder;
-    if (canSplitIdentifier(identifier, keyword, remainder)) {
-        // Buffer the number token first (it will be returned last)
-        Token numberToken(TOKEN_NUMBER, remainder, line, column);
-        tokenBuffer.push_back(numberToken);
-        
-        // Return the keyword token first
-        auto it = keywords.find(keyword);
-        Token token(TOKEN_KEYWORD, keyword, line, column);
-        token.keyword = it->second;
-        return token;
+    // Split the identifier recursively
+    std::vector<Token> tokens;
+    splitIdentifierRecursively(identifier, tokens);
+    
+    // Buffer all tokens except the first one
+    for (int i = tokens.size() - 1; i > 0; i--) {
+        tokenBuffer.push_back(tokens[i]);
     }
     
-    // Check if it's a complete keyword
-    auto it = keywords.find(identifier);
-    if (it != keywords.end()) {
-        Token token(TOKEN_KEYWORD, identifier, line, column);
-        token.keyword = it->second;
-        return token;
+    // Return the first token
+    if (!tokens.empty()) {
+        return tokens[0];
     }
     
     return Token(TOKEN_VARIABLE, identifier, line, column);
