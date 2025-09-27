@@ -68,6 +68,7 @@ private:
     bool returningFromSubroutine;
     bool debug;
     int m_currentColumn;
+    int on_error_goto_line;
     
     // Execution methods
     void executeProgram();

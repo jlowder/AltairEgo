@@ -44,6 +44,7 @@ void Lexer::initializeKeywords() {
     keywords["FN"] = KW_FN;
     keywords["ON"] = KW_ON;
     keywords["STEP"] = KW_STEP;
+    keywords["ERROR"] = KW_ERROR;
 }
 
 std::string Lexer::getLineText(int lineNumber) {
