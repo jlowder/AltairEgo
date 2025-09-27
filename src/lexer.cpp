@@ -147,6 +147,18 @@ bool Lexer::isKeywordPrefix(const std::string& text, size_t startPos, std::strin
             std::string substr = text.substr(startPos, kw.length());
             std::transform(substr.begin(), substr.end(), substr.begin(), ::toupper);
             if (substr == kw) {
+                // Special case: FN should not be treated as a keyword prefix
+                // when followed by alphabetic characters, because FND, FNR, etc.
+                // are complete function names, not "FN" keyword + variable
+                if (kw == "FN") {
+                    if (startPos + kw.length() < text.length()) {
+                        char nextChar = text[startPos + kw.length()];
+                        if (std::isalpha(nextChar)) {
+                            continue; // Skip FN when followed by alphabetic character
+                        }
+                    }
+                }
+                
                 // Check if the character after the keyword is valid for a variable start
                 if (startPos + kw.length() < text.length()) {
                     char nextChar = text[startPos + kw.length()];
