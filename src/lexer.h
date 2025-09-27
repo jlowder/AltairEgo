@@ -49,6 +49,7 @@ private:
     int line;
     int column;
     static std::map<std::string, KeywordType> keywords;
+    std::vector<Token> tokenBuffer;
     
     std::string getLineText(int lineNumber);
     char currentChar();
@@ -60,13 +61,18 @@ private:
     Token readString();
     Token readIdentifier();
     Token readOperator();
+    bool isKeywordPrefix(const std::string& text, size_t startPos, std::string& keyword);
     
 public:
+    bool canSplitIdentifier(const std::string& identifier, std::string& keyword, std::string& remainder);
+    bool canSplitIdentifierWithEmbeddedKeyword(const std::string& identifier, std::string& prefix, std::string& keyword, std::string& suffix);
+    void splitIdentifierRecursively(const std::string& identifier, std::vector<Token>& tokens);
     Lexer();
     void setInput(const std::string& text);
     Token nextToken();
     std::vector<Token> tokenize(const std::string& text);
     static void initializeKeywords();
+    bool isKeywordSuffix(const std::string& text, size_t startPos, std::string& keyword);
 };
 
 #endif

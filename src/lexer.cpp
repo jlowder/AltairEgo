@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 std::map<std::string, KeywordType> Lexer::keywords;
 
@@ -72,6 +73,7 @@ void Lexer::setInput(const std::string& text) {
     position = 0;
     line = 1;
     column = 1;
+    tokenBuffer.clear();
 }
 
 char Lexer::currentChar() {
@@ -137,6 +139,192 @@ Token Lexer::readString() {
     return Token(TOKEN_STRING, str, line, column);
 }
 
+bool Lexer::isKeywordPrefix(const std::string& text, size_t startPos, std::string& keyword) {
+    // Check if there's a keyword starting at the given position
+    for (const auto& pair : keywords) {
+        const std::string& kw = pair.first;
+        if (startPos + kw.length() <= text.length()) {
+            std::string substr = text.substr(startPos, kw.length());
+            std::transform(substr.begin(), substr.end(), substr.begin(), ::toupper);
+            if (substr == kw) {
+                // Special case: FN should not be treated as a keyword prefix
+                // when followed by alphabetic characters, because FND, FNR, etc.
+                // are complete function names, not "FN" keyword + variable
+                if (kw == "FN") {
+                    if (startPos + kw.length() < text.length()) {
+                        char nextChar = text[startPos + kw.length()];
+                        if (std::isalpha(nextChar)) {
+                            continue; // Skip FN when followed by alphabetic character
+                        }
+                    }
+                }
+                
+                // Check if the character after the keyword is valid for a variable start
+                if (startPos + kw.length() < text.length()) {
+                    char nextChar = text[startPos + kw.length()];
+                    if (std::isalpha(nextChar) || nextChar == '$') {
+                        keyword = kw;
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Lexer::isKeywordSuffix(const std::string& text, size_t startPos, std::string& keyword) {
+    // Check if there's a keyword ending at the given position
+    for (const auto& pair : keywords) {
+        const std::string& kw = pair.first;
+        if (startPos >= kw.length()) {
+            std::string substr = text.substr(startPos - kw.length(), kw.length());
+            std::transform(substr.begin(), substr.end(), substr.begin(), ::toupper);
+            if (substr == kw) {
+                // Check if the character after the keyword is valid for a number start
+                if (startPos < text.length()) {
+                    char nextChar = text[startPos];
+                    if (std::isdigit(nextChar)) {
+                        keyword = kw;
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Lexer::canSplitIdentifier(const std::string& identifier, std::string& keyword, std::string& remainder) {
+    // Check if identifier contains a keyword followed by a number
+    for (const auto& pair : keywords) {
+        const std::string& kw = pair.first;
+        if (identifier.length() > kw.length()) {
+            std::string prefix = identifier.substr(0, kw.length());
+            std::transform(prefix.begin(), prefix.end(), prefix.begin(), ::toupper);
+            if (prefix == kw) {
+                // Check if the remainder is a valid number
+                std::string suffix = identifier.substr(kw.length());
+                if (!suffix.empty() && std::all_of(suffix.begin(), suffix.end(), ::isdigit)) {
+                    keyword = kw;
+                    remainder = suffix;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Lexer::canSplitIdentifierWithEmbeddedKeyword(const std::string& identifier, std::string& prefix, std::string& keyword, std::string& suffix) {
+    // Check if identifier contains a keyword embedded within it (like T9THENT9 -> T9 + THEN + T9)
+    // or multiple keywords in sequence (like ONIGOTO2300 -> ON + I + GOTO + 2300)
+    
+    // First, try to find a keyword at the beginning
+    for (const auto& pair : keywords) {
+        const std::string& kw = pair.first;
+        if (identifier.length() >= kw.length()) {
+            std::string substr = identifier.substr(0, kw.length());
+            std::transform(substr.begin(), substr.end(), substr.begin(), ::toupper);
+            if (substr == kw) {
+                // Special case: FN should not be treated as a keyword prefix
+                // when followed by alphabetic characters, because FND, FNR, etc.
+                // are complete function names, not "FN" keyword + variable
+                if (kw == "FN") {
+                    if (kw.length() < identifier.length()) {
+                        char nextChar = identifier[kw.length()];
+                        if (std::isalpha(nextChar)) {
+                            continue; // Skip FN when followed by alphabetic character
+                        }
+                    }
+                }
+                
+                // Found keyword at the beginning
+                prefix = "";
+                keyword = kw;
+                suffix = identifier.substr(kw.length());
+                return true;
+            }
+        }
+    }
+    
+    // Then, try to find a keyword embedded within the identifier
+    for (const auto& pair : keywords) {
+        const std::string& kw = pair.first;
+        if (identifier.length() > kw.length()) {
+            // Look for the keyword at any position within the identifier
+            for (size_t i = 1; i <= identifier.length() - kw.length(); i++) {
+                std::string substr = identifier.substr(i, kw.length());
+                std::transform(substr.begin(), substr.end(), substr.begin(), ::toupper);
+                if (substr == kw) {
+                    // Found the keyword at position i
+                    prefix = identifier.substr(0, i);
+                    keyword = kw;
+                    suffix = identifier.substr(i + kw.length());
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+void Lexer::splitIdentifierRecursively(const std::string& identifier, std::vector<Token>& tokens) {
+    // Check if this identifier can be split with embedded keyword
+    std::string prefix, keyword, suffix;
+    if (canSplitIdentifierWithEmbeddedKeyword(identifier, prefix, keyword, suffix)) {
+        // Recursively split the prefix if it's not empty
+        if (!prefix.empty()) {
+            splitIdentifierRecursively(prefix, tokens);
+        }
+        
+        // Add the keyword token
+        auto it = keywords.find(keyword);
+        Token keywordToken(TOKEN_KEYWORD, keyword, line, column);
+        keywordToken.keyword = it->second;
+        tokens.push_back(keywordToken);
+        
+        // Recursively split the suffix if it's not empty
+        if (!suffix.empty()) {
+            splitIdentifierRecursively(suffix, tokens);
+        }
+        return;
+    }
+    
+    // Check if this identifier can be split (like TO9 -> TO + 9)
+    std::string keyword2, remainder;
+    if (canSplitIdentifier(identifier, keyword2, remainder)) {
+        // Add the keyword token
+        auto it = keywords.find(keyword2);
+        Token keywordToken(TOKEN_KEYWORD, keyword2, line, column);
+        keywordToken.keyword = it->second;
+        tokens.push_back(keywordToken);
+        
+        // Add the number token
+        Token numberToken(TOKEN_NUMBER, remainder, line, column);
+        tokens.push_back(numberToken);
+        return;
+    }
+    
+    // Check if it's a complete keyword
+    auto it = keywords.find(identifier);
+    if (it != keywords.end()) {
+        Token token(TOKEN_KEYWORD, identifier, line, column);
+        token.keyword = it->second;
+        tokens.push_back(token);
+        return;
+    }
+    
+    // It's a variable or number
+    if (!identifier.empty() && std::isdigit(identifier[0])) {
+        Token token(TOKEN_NUMBER, identifier, line, column);
+        tokens.push_back(token);
+    } else {
+        Token token(TOKEN_VARIABLE, identifier, line, column);
+        tokens.push_back(token);
+    }
+}
+
 Token Lexer::readIdentifier() {
     std::string identifier;
     
@@ -145,11 +333,18 @@ Token Lexer::readIdentifier() {
         advance();
     }
     
-    auto it = keywords.find(identifier);
-    if (it != keywords.end()) {
-        Token token(TOKEN_KEYWORD, identifier, line, column);
-        token.keyword = it->second;
-        return token;
+    // Split the identifier recursively
+    std::vector<Token> tokens;
+    splitIdentifierRecursively(identifier, tokens);
+    
+    // Buffer all tokens except the first one
+    for (int i = tokens.size() - 1; i > 0; i--) {
+        tokenBuffer.push_back(tokens[i]);
+    }
+    
+    // Return the first token
+    if (!tokens.empty()) {
+        return tokens[0];
     }
     
     return Token(TOKEN_VARIABLE, identifier, line, column);
@@ -197,6 +392,13 @@ Token Lexer::readOperator() {
 }
 
 Token Lexer::nextToken() {
+    // Check if we have buffered tokens to return
+    if (!tokenBuffer.empty()) {
+        Token token = tokenBuffer.back();
+        tokenBuffer.pop_back();
+        return token;
+    }
+    
     skipWhitespace();
     
     char ch = currentChar();
@@ -219,6 +421,18 @@ Token Lexer::nextToken() {
     }
     
     if (std::isalpha(ch)) {
+        // Check if this could be a keyword followed by a variable
+        std::string keyword;
+        if (isKeywordPrefix(input, position, keyword)) {
+            // Read the keyword
+            for (size_t i = 0; i < keyword.length(); i++) {
+                advance();
+            }
+            auto it = keywords.find(keyword);
+            Token token(TOKEN_KEYWORD, keyword, line, column);
+            token.keyword = it->second;
+            return token;
+        }
         return readIdentifier();
     }
     
