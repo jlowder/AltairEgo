@@ -22,3 +22,4 @@ config.log
 config.h
 Makefile
 src/Makefile
+src/.deps/*.Po
