@@ -92,6 +92,9 @@ The `working-examples/` directory contains several classic BASIC games that demo
   - [Source](working-examples/mastermind.bas)
   - <a href="https://jlowder.github.io/AltairEgo/spa/mastermind.html" target="_blank">Play in browser</a>
 
+- **superstartrek.bas** - Star Trek simulator.
+  - [Source](working-examples/superstartrek.bas)
+  - <a href="https://jlowder.github.io/AltairEgo/spa/superstartrek.html" target="_blank">Play in browser</a>
 ### Running an Example
 
 ```bash
