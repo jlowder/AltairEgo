@@ -1,10 +1,11 @@
 # AltairEgo
 
-A 1970s-era BASIC language interpreter designed to run classic programs from David Ahl's "101 Basic Computer Games" collection.
+A 1970s-era BASIC language emulator designed to run classic programs from David Ahl's "101 Basic Computer Games" collection.
 
 ## Overview
 
-AltairEgo is a faithful implementation of vintage BASIC, capturing the essence of early personal computing. The interpreter supports the core BASIC language features needed to run educational and entertainment programs from the golden age of home computing.
+AltairEgo is a faithful emulator for BASIC language from the circa 1970's era of personal computing. It supports the core
+BASIC language features needed to run educational and entertainment programs from that time.
 
 ## Features
 
@@ -18,7 +19,7 @@ AltairEgo is a faithful implementation of vintage BASIC, capturing the essence o
 
 ## Building
 
-AltairEgo uses GNU Autotools for building the command-line interpreter:
+AltairEgo uses GNU Autotools for building the command-line version:
 
 ```bash
 ./autogen.sh
@@ -29,7 +30,7 @@ sudo make install
 
 ### Building for the Web (Emscripten)
 
-To compile the interpreter as a web application, you'll need the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html). 
+To compile as a web application, you'll need the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html).
 
 The `working-examples/spaify` directory contains scripts to facilitate building Single Page Applications (SPAs) from BASIC source files:
 
@@ -66,7 +67,7 @@ altair_ego program.bas
 ```
 ## Example Programs
 
-The `working-examples/` directory contains several classic BASIC games that demonstrate the interpreter's capabilities. You can run them from the command line or play them directly in your browser.
+The `working-examples/` directory contains several classic BASIC games that demonstrate the interpreter's capabilities. You can run them from the command line or run them directly in your browser.
 
 - **3dplot.bas** - 3D plotting demonstration.
   - [Source](working-examples/3dplot.bas)
@@ -182,7 +183,10 @@ working-examples/
 
 ## Compatibility
 
-This interpreter aims for compatibility with BASIC programs from the 1970s era, specifically those found in educational computing books like "101 Basic Computer Games". While not a complete implementation of any specific BASIC dialect, it supports the most commonly used features from that period.
+This emulator is intended to be compatible with BASIC programs from the 1970s era, specifically those found in educational computing books like "101 Basic Computer Games" by David Ahl. The complete source code of the programs in this book can be found
+in online repositories such <a href="http://vintage-basic.net/games.html"/> and <a href="https://github.com/GReaperEx/bcg"/>.
+I haven't personally tried all the programs from it but I have tried many of them, and the emulator correctly runs the ones I
+have tried.
 
 ## Contributing
 
