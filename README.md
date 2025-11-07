@@ -184,7 +184,7 @@ working-examples/
 ## Compatibility
 
 This emulator is intended to be compatible with BASIC programs from the 1970s era, specifically those found in educational computing books like "101 Basic Computer Games" by David Ahl. The complete source code of the programs in this book can be found
-in online repositories such <a href="http://vintage-basic.net/games.html"/> and <a href="https://github.com/GReaperEx/bcg"/>.
+in online repositories such [Vintage Basic](http://vintage-basic.net/games.html) and [https://github.com/GReaperEx/bcg](https://github.com/GReaperEx/bcg).
 I haven't personally tried all the programs from it but I have tried many of them, and the emulator correctly runs the ones I
 have tried.
 
