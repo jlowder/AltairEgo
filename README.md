@@ -3,10 +3,10 @@
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://badge.fury.io/v/altair-ego)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Language: BASIC](https://img.shields.io/badge/Language-BASIC-blueviolet.svg)]()
+[![Implementation: C++](https://img.shields.io/badge/Implementation-C++-23c086.svg)](https://isocpp.org/)
 [![Build System: Autotools](https://img.shields.io/badge/Build-Autotools-64b595.svg)](https://www.gnu.org/software/autoconf/)
 [![Tests](https://img.shields.io/badge/tests-1_passing-green.svg)](./test-suite.log)
 [![Type: Educational](https://img.shields.io/badge/Type-Educational-green)]()
-[![License File: MIT LICENSE](https://img.shields.io/badge/license-MIT%20LICENSE-blueviolet.svg)](/LICENSE)
 
 A 1970s-era BASIC language emulator designed to run classic programs from David Ahl's "101 Basic Computer Games" collection.
 
