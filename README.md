@@ -1,6 +1,14 @@
-# AltairEgo
-
-A 1970s-era BASIC language emulator designed to run classic programs from David Ahl's "101 Basic Computer Games" collection.
+     1|# AltairEgo
+     2|
+     3|[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://badge.fury.io/v/altair-ego)
+     4|[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+     5|[![Language: BASIC](https://img.shields.io/badge/Language-BASIC-blueviolet.svg)]()
+     6|[![Build System: Autotools](https://img.shields.io/badge/Build-Autotools-64b595.svg)](https://www.gnu.org/software/autoconf/)
+     7|[![Tests](https://img.shields.io/badge/tests-1_passing-green.svg)](./test-suite.log)
+     8|[![Type: Educational](https://img.shields.io/badge/Type-Educational-green)]()
+     9|[![License File: MIT LICENSE](https://img.shields.io/badge/license-MIT%20LICENSE-blueviolet.svg)](/LICENSE)
+     8|
+     9|A 1970s-era BASIC language emulator designed to run classic programs from David Ahl's "101 Basic Computer Games" collection.
 
 ## Overview
 
